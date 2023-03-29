@@ -39,7 +39,9 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     marginRight: 10,
   },
-
+  content: {
+    flex: 1,
+  },
   name: {
     fontWeight: "bold",
   },
