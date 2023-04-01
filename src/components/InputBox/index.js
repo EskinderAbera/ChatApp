@@ -2,12 +2,36 @@ import { StyleSheet, TextInput } from "react-native";
 import React from "react";
 import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { API, Auth, graphqlOperation } from "aws-amplify";
+import { createMessage, updateChatRoom } from "../../graphql/mutations";
 
-const InputBox = () => {
+const InputBox = ({ chatRoom }) => {
   const [newMessage, setNewMessage] = React.useState("");
 
-  const onSend = () => {
+  const onSend = async () => {
+    const authUser = await Auth.currentAuthenticatedUser();
+
+    const message = {
+      chatroomID: chatRoom.id,
+      text: newMessage,
+      userID: authUser.attributes.sub,
+    };
+
+    const newMessageData = await API.graphql(
+      graphqlOperation(createMessage, { input: message })
+    );
+
     setNewMessage("");
+
+    await API.graphql(
+      graphqlOperation(updateChatRoom, {
+        input: {
+          _version: chatRoom._version,
+          chatRoomLastMessageId: newMessageData.data.createMessage.id,
+          id: chatRoom.id,
+        },
+      })
+    );
   };
 
   return (

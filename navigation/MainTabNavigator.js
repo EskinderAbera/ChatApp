@@ -1,7 +1,7 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import NotImplementedScreen from "../src/screens/NotImplementedScreen";
-import ChatsScreen from "../src/screens/ChatsScreen";
+import ChatsScreen from "../src/screens/ChatsScreen/ChatsScreen";
 import { Entypo, Ionicons } from "@expo/vector-icons";
 import SettingsScreen from "../src/screens/SettingsScreen";
 

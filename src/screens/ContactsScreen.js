@@ -1,6 +1,5 @@
 import { FlatList } from "react-native";
 import React from "react";
-import chats from "../../assets/data/chats.json";
 import ContactListItem from "../components/ContactListItem";
 import { API, graphqlOperation } from "aws-amplify";
 import { listUsers } from "../graphql/queries";
