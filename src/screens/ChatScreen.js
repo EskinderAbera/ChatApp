@@ -9,24 +9,38 @@ import {
 import React from "react";
 import bg from "../../assets/images/BG.png";
 import Message from "../components/Message";
-import messages from "../../assets/data/messages.json";
 import InputBox from "../components/InputBox";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { API, graphqlOperation } from "aws-amplify";
-import { getChatRoom } from "../graphql/queries";
+import { getChatRoom, listMessagesByChatRoom } from "../graphql/queries";
 
 const ChatScreen = () => {
   const [chatRoom, setchatRoom] = React.useState(null);
+  const [messages, setMessages] = React.useState([]);
+
   const navigation = useNavigation();
   const route = useRoute();
 
   const { id, name } = route.params;
 
+  // fetch chatroom
   React.useEffect(() => {
-    API.graphql(graphqlOperation(getChatRoom, { id })).then((result) =>
-      setchatRoom(result.data?.getChatRoom)
-    );
-  }, []);
+    API.graphql(graphqlOperation(getChatRoom, { id })).then((result) => {
+      setchatRoom(result.data?.getChatRoom);
+    });
+  }, [id]);
+
+  // fetches Messages
+  React.useEffect(() => {
+    API.graphql(
+      graphqlOperation(listMessagesByChatRoom, {
+        chatroomID: id,
+        sortDirection: "DESC",
+      })
+    ).then((result) => {
+      setMessages(result.data?.listMessagesByChatRoom?.items);
+    });
+  }, [id]);
 
   React.useEffect(() => {
     navigation.setOptions({ title: name });
@@ -44,7 +58,7 @@ const ChatScreen = () => {
     >
       <ImageBackground source={bg} style={styles.bg}>
         <FlatList
-          data={chatRoom.Messages.items}
+          data={messages}
           renderItem={({ item }) => <Message message={item} />}
           style={styles.list}
           inverted
