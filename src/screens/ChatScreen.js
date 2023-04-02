@@ -13,6 +13,7 @@ import InputBox from "../components/InputBox";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { API, graphqlOperation } from "aws-amplify";
 import { getChatRoom, listMessagesByChatRoom } from "../graphql/queries";
+import { onCreateMessage, onUpdateChatRoom } from "../graphql/subscriptions";
 
 const ChatScreen = () => {
   const [chatRoom, setchatRoom] = React.useState(null);
@@ -28,9 +29,23 @@ const ChatScreen = () => {
     API.graphql(graphqlOperation(getChatRoom, { id })).then((result) => {
       setchatRoom(result.data?.getChatRoom);
     });
+
+    const subscription = API.graphql(
+      graphqlOperation(onUpdateChatRoom, { filter: { id: { eq: id } } })
+    ).subscribe({
+      next: ({ value }) => {
+        setchatRoom((cr) => ({
+          ...(cr || {}),
+          ...value.data.onUpdateChatRoom,
+        }));
+      },
+      error: (err) => console.log(err),
+    });
+
+    return () => subscription.unsubscribe();
   }, [id]);
 
-  // fetches Messages
+  // fetch Messages
   React.useEffect(() => {
     API.graphql(
       graphqlOperation(listMessagesByChatRoom, {
@@ -40,6 +55,21 @@ const ChatScreen = () => {
     ).then((result) => {
       setMessages(result.data?.listMessagesByChatRoom?.items);
     });
+
+    // Subscribe to new message
+    // filter used to listen only with the same id to the chatroom
+
+    const subscription = API.graphql(
+      graphqlOperation(onCreateMessage, { filter: { chatroomID: { eq: id } } })
+    ).subscribe({
+      next: ({ value }) => {
+        setMessages((m) => [value.data.onCreateMessage, ...m]);
+      },
+      error: (err) => console.log(err),
+    });
+
+    // unsubscribe when the component unmount
+    return () => subscription.unsubscribe();
   }, [id]);
 
   React.useEffect(() => {

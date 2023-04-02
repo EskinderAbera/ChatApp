@@ -3,13 +3,35 @@ import React from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { useNavigation } from "@react-navigation/native";
+import { API, graphqlOperation } from "aws-amplify";
+import { onUpdateChatRoom } from "../../graphql/subscriptions";
 
 dayjs.extend(relativeTime);
 
 const ChatListItem = ({ chat, id }) => {
   const navigation = useNavigation();
 
+  const [chatRoom, setchatRoom] = React.useState(chat);
+
   const user = chat.users.items.filter((user) => user.user.id != id)[0].user;
+
+  React.useEffect(() => {
+    const subscription = API.graphql(
+      graphqlOperation(onUpdateChatRoom, {
+        filter: { id: { eq: chat.id } },
+      })
+    ).subscribe({
+      next: ({ value }) => {
+        setchatRoom((cr) => ({
+          ...(cr || {}),
+          ...value.data.onUpdateChatRoom,
+        }));
+      },
+      error: (err) => console.log(err),
+    });
+
+    return () => subscription.unsubscribe();
+  }, [chat.id]);
 
   return (
     <TouchableOpacity
@@ -24,14 +46,14 @@ const ChatListItem = ({ chat, id }) => {
           <Text style={styles.name} numberOfLines={1}>
             {user?.name}
           </Text>
-          {chat.LastMessage && (
+          {chatRoom.LastMessage && (
             <Text style={styles.subTitle}>
-              {dayjs(chat.LastMessage?.createdAt).fromNow(true)}
+              {dayjs(chatRoom.LastMessage?.createdAt).fromNow(true)}
             </Text>
           )}
         </View>
         <Text style={styles.subTitle} numberOfLines={2}>
-          {chat.LastMessage?.text}
+          {chatRoom.LastMessage?.text}
         </Text>
       </View>
     </TouchableOpacity>

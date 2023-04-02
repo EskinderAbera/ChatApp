@@ -11,8 +11,11 @@ const chatRoomService = async (user1ID) => {
   const chatRooms = response.data?.getUser?.ChatRooms?.items || [];
 
   const chatRoom = chatRooms.find((chatRoomItem) => {
-    return chatRoomItem.chatRoom.users.items.some(
-      (userItem) => userItem.user.id === user1ID
+    return (
+      chatRoomItem.chatRoom.users.items.length &&
+      chatRoomItem.chatRoom.users.items.some(
+        (userItem) => userItem.user.id === user1ID
+      )
     );
   });
 
