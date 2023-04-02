@@ -5,6 +5,8 @@ import { createStackNavigator } from "@react-navigation/stack";
 import MainTabNavigator from "./MainTabNavigator";
 import ContactsScreen from "../src/screens/ContactsScreen";
 import NewGroupScreen from "../src/screens/NewGroupScreen";
+import GroupInfoScreen from "../src/screens/GroupInfoScreen";
+import AddContactsGroupScreen from "../src/screens/AddContactsGroupScreen";
 
 const Stack = createStackNavigator();
 
@@ -30,6 +32,16 @@ const Navigator = () => {
         <Stack.Screen
           name="New Group"
           component={NewGroupScreen}
+          options={{ headerStyle: { backgroundColor: "whitesmoke" } }}
+        />
+        <Stack.Screen
+          name="Group Info"
+          component={GroupInfoScreen}
+          options={{ headerStyle: { backgroundColor: "whitesmoke" } }}
+        />
+        <Stack.Screen
+          name="Add Contacts"
+          component={AddContactsGroupScreen}
           options={{ headerStyle: { backgroundColor: "whitesmoke" } }}
         />
       </Stack.Navigator>

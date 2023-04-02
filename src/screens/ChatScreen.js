@@ -14,6 +14,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { API, graphqlOperation } from "aws-amplify";
 import { getChatRoom, listMessagesByChatRoom } from "../graphql/queries";
 import { onCreateMessage, onUpdateChatRoom } from "../graphql/subscriptions";
+import { Feather } from "@expo/vector-icons";
 
 const ChatScreen = () => {
   const [chatRoom, setchatRoom] = React.useState(null);
@@ -73,8 +74,18 @@ const ChatScreen = () => {
   }, [id]);
 
   React.useEffect(() => {
-    navigation.setOptions({ title: name });
-  }, [name]);
+    navigation.setOptions({
+      title: name,
+      headerRight: () => (
+        <Feather
+          name="more-vertical"
+          size={24}
+          color="gray"
+          onPress={() => navigation.navigate("Group Info", { id })}
+        />
+      ),
+    });
+  }, [name, id]);
 
   if (!chatRoom) {
     return <ActivityIndicator />;
