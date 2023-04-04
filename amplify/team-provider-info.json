@@ -17,6 +17,9 @@
       },
       "api": {
         "ChatApp": {}
+      },
+      "storage": {
+        "s3chatappstorage1c107395": {}
       }
     }
   }

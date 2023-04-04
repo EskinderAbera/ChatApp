@@ -16,5 +16,11 @@ export type AmplifyDependentResourcesAttributes = {
       "UserPoolId": "string",
       "UserPoolName": "string"
     }
+  },
+  "storage": {
+    "s3chatappstorage1c107395": {
+      "BucketName": "string",
+      "Region": "string"
+    }
   }
 }
